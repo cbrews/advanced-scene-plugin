@@ -43,18 +43,20 @@ class AdvancedSceneQueItem(
     override fun renderText() = description()
     override fun toString() = description()
     override fun toConfigString() = description()
-    var numberFormatter: NumberFormat
+
+    private var numberFormatter: NumberFormat = NumberFormat.getInstance()
 
     init {
-        numberFormatter = NumberFormat.getInstance()
-        numberFormatter.setGroupingUsed(true)
+        numberFormatter.isGroupingUsed = true
     }
 
     override fun activate() {
         OBSClient.getController()!!.setTransitionDuration(transitionDuration) {
+            TODO("Make sure scene still transitions if duration change fails")
             OBSClient.getController()!!.changeSceneWithTransition(scene.name, transition.name) {
+                TODO("Make sure that the scene still transitions even if the specified transition cannot be found")
                 GUI.switchedScenes()
-                // set preview scene next queued scene
+                TODO("set preview scene next queued scene")
             }
         }
     }
