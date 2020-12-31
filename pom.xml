@@ -107,7 +107,7 @@
                 <!-- Plugin to create a project base version (without -SNAPSHOT) for use in launch4j plugin -->
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>build-helper-maven-plugin</artifactId>
-                <version>3.0.0</version>
+                <version>3.2.0</version>
                 <executions>
                     <execution>
                         <id>set-project-base-version</id>
