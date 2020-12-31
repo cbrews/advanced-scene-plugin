@@ -19,7 +19,6 @@
 package com.chrisbrousseau.advancedScene.gui
 
 import com.chrisbrousseau.advancedScene.AdvancedScenePlugin
-import com.chrisbrousseau.advancedScene.AdvancedSceneProperties
 import com.chrisbrousseau.advancedScene.queItems.AdvancedSceneQueItem
 import gui.Refreshable
 import gui.utils.DefaultSourcesList
@@ -33,6 +32,11 @@ import java.awt.GridLayout
 import java.util.logging.Logger
 import javax.swing.*
 import javax.swing.border.EmptyBorder
+
+const val LABEL_SCENES = "Scene List"
+const val LABEL_TRANSITIONS = "Transition List"
+const val LABEL_DURATION = "Transition Duration"
+const val LABEL_ADD_BUTTON = "Add"
 
 class SourcePanel(private val plugin: AdvancedScenePlugin): JPanel(), Refreshable {
     private val logger = Logger.getLogger(SourcePanel::class.java.name)
@@ -52,28 +56,28 @@ class SourcePanel(private val plugin: AdvancedScenePlugin): JPanel(), Refreshabl
         layout = GridLayout(4, 1)
         border = EmptyBorder(10, 10, 0, 10)
 
-        add(JLabel(AdvancedSceneProperties.get("label_scenes")))
+        add(JLabel(LABEL_SCENES))
 
         val sceneScrollPane = JScrollPane(sceneList)
         sceneScrollPane.preferredSize = Dimension(300, 200)
         sceneScrollPane.border = BorderFactory.createLineBorder(Theme.get.BORDER_COLOR)
         add(sceneScrollPane)
 
-        add(JLabel(AdvancedSceneProperties.get("label_transitions")))
+        add(JLabel(LABEL_TRANSITIONS))
 
         val transitionScrollPane = JScrollPane(transitionList)
         transitionScrollPane.preferredSize = Dimension(300, 200)
         transitionScrollPane.border = BorderFactory.createLineBorder(Theme.get.BORDER_COLOR)
         add(transitionScrollPane)
 
-        add(JLabel(AdvancedSceneProperties.get("label_duration")))
+        add(JLabel(LABEL_DURATION))
 
         val transitionDurationSpinner = JSpinner(SpinnerNumberModel(1000, 0, Int.MAX_VALUE, 250))
         transitionDurationSpinner.border = BorderFactory.createLineBorder(Theme.get.BORDER_COLOR)
         transitionDurationSpinner.preferredSize = Dimension(transitionDurationSpinner.preferredSize.height, 10)
         add(transitionDurationSpinner)
 
-        val addButton = JButton(AdvancedSceneProperties.get("label_add_button"))
+        val addButton = JButton(LABEL_ADD_BUTTON)
         addButton.addActionListener {
             val scene = OBSState.scenes.get(sceneList.selectedIndex)
             val transition = OBSState.transitions.get(transitionList.selectedIndex)
