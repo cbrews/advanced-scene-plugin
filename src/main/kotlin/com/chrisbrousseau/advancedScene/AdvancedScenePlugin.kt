@@ -19,6 +19,8 @@
 package com.chrisbrousseau.advancedScene
 
 import com.chrisbrousseau.advancedScene.gui.SourcePanel
+import com.chrisbrousseau.advancedScene.queItems.AdvancedSceneQueItem
+import gui.list.QuePanel
 import gui.utils.createImageIcon
 import objects.que.JsonQueue
 import objects.que.QueItem
@@ -33,20 +35,34 @@ class AdvancedScenePlugin: QueItemBasePlugin {
     override val description = "Adds scene advancedScene control to OBS Scene Queue"
     override val version: String = "0.1.0"
 
-    override val icon: Icon? = createImageIcon("icon-14.png")
+    override val icon: Icon? = createImageIcon("/com/chrisbrousseau/advancedScene/icon-14.png")
+    val warningIcon: Icon? = createImageIcon("/com/chrisbrousseau/advancedScene/icon-warning-14.png")
+    val errorIcon: Icon? = createImageIcon("/com/chrisbrousseau/advancedScene/icon-error-14.png")
+
     override val tabName = "Advanced Scenes"
 
     val quickAccessColor = Color(229, 238, 255)
+
+    override fun enable() {
+        super.enable()
+    }
+
+    override fun disable() {
+        super.disable()
+    }
 
     override fun sourcePanel(): JComponent {
         return SourcePanel(this)
     }
 
     override fun configStringToQueItem(value: String): QueItem {
-        TODO("Deprecated abstract function")
+        throw NotImplementedError("Cannot convert string to AdvancedSceneQueItem")
     }
 
     override fun jsonToQueItem(jsonQueueItem: JsonQueue.QueueItem): QueItem {
-        throw NotImplementedError("Not implemented")
+        return when (jsonQueueItem.className) {
+            AdvancedSceneQueItem::class.java.simpleName -> AdvancedSceneQueItem.fromJson(this, jsonQueueItem)
+            else -> throw IllegalArgumentException("Invalid Advanced Scene Plugin queue item: ${jsonQueueItem.className}")
+        }
     }
 }

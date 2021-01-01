@@ -23,19 +23,22 @@ import com.chrisbrousseau.advancedScene.queItems.AdvancedSceneQueItem
 import gui.Refreshable
 import gui.utils.DefaultSourcesList
 import objects.OBSState
-import objects.TScene
-import objects.TTransition
+import objects.notifications.Notifications
 import objects.que.Que
 import themes.Theme
 import java.awt.Dimension
-import java.awt.GridLayout
+import java.awt.BorderLayout
+import java.awt.Font
+import java.awt.event.ActionEvent
 import java.util.logging.Logger
+import javax.management.Notification
 import javax.swing.*
 import javax.swing.border.EmptyBorder
 
+const val LABEL_HEADER = "Select a scene, a transition, a duration, and click \"Add\" to add to the queue."
 const val LABEL_SCENES = "Scene List"
 const val LABEL_TRANSITIONS = "Transition List"
-const val LABEL_DURATION = "Transition Duration"
+const val LABEL_DURATION = "Transition Duration (ms)"
 const val LABEL_ADD_BUTTON = "Add"
 
 class SourcePanel(private val plugin: AdvancedScenePlugin): JPanel(), Refreshable {
@@ -43,6 +46,15 @@ class SourcePanel(private val plugin: AdvancedScenePlugin): JPanel(), Refreshabl
 
     private val sceneList: JList<String> = DefaultSourcesList()
     private val transitionList: JList<String> = DefaultSourcesList()
+    private val transitionDuration: SpinnerNumberModel = SpinnerNumberModel(1000, 0, Int.MAX_VALUE, 250)
+
+    private val sceneListSelector: JScrollPane = JScrollPane(sceneList)
+    private val transitionListSelector: JScrollPane = JScrollPane(transitionList)
+    private val transitionDurationSelector: JSpinner = JSpinner(transitionDuration)
+
+    private val addButton: JButton = JButton(LABEL_ADD_BUTTON)
+
+    private val marginTop = EmptyBorder(5, 0, 0, 0)
 
     init {
         initGui()
@@ -52,57 +64,162 @@ class SourcePanel(private val plugin: AdvancedScenePlugin): JPanel(), Refreshabl
         refreshTransitions()
     }
 
-    private fun initGui() {
-        layout = GridLayout(4, 1)
-        border = EmptyBorder(10, 10, 0, 10)
-
-        add(JLabel(LABEL_SCENES))
-
-        val sceneScrollPane = JScrollPane(sceneList)
-        sceneScrollPane.preferredSize = Dimension(300, 200)
-        sceneScrollPane.border = BorderFactory.createLineBorder(Theme.get.BORDER_COLOR)
-        add(sceneScrollPane)
-
-        add(JLabel(LABEL_TRANSITIONS))
-
-        val transitionScrollPane = JScrollPane(transitionList)
-        transitionScrollPane.preferredSize = Dimension(300, 200)
-        transitionScrollPane.border = BorderFactory.createLineBorder(Theme.get.BORDER_COLOR)
-        add(transitionScrollPane)
-
-        add(JLabel(LABEL_DURATION))
-
-        val transitionDurationSpinner = JSpinner(SpinnerNumberModel(1000, 0, Int.MAX_VALUE, 250))
-        transitionDurationSpinner.border = BorderFactory.createLineBorder(Theme.get.BORDER_COLOR)
-        transitionDurationSpinner.preferredSize = Dimension(transitionDurationSpinner.preferredSize.height, 10)
-        add(transitionDurationSpinner)
-
-        val addButton = JButton(LABEL_ADD_BUTTON)
-        addButton.addActionListener {
-            val scene = OBSState.scenes.get(sceneList.selectedIndex)
-            val transition = OBSState.transitions.get(transitionList.selectedIndex)
-            addQueItem(scene, transition, transitionDurationSpinner.value as Int)
-        }
-        add(addButton)
-    }
-
-    private fun addQueItem(scene: TScene, transition: TTransition, duration: Int) {
-        val queItem = AdvancedSceneQueItem(plugin, scene, transition, duration)
-        Que.add(queItem)
-        GUI.refreshQueItems()
-    }
+    /**
+     * Plugin hooks
+     */
 
     override fun refreshScenes() {
         super.refreshScenes()
+
         sceneList.setListData(OBSState.scenes.map { it.name }.toTypedArray())
         sceneList.repaint()
+
+        updateAddButton()
     }
 
     override fun refreshTransitions() {
         super.refreshTransitions()
+
         transitionList.setListData(OBSState.transitions.map { it.name }.toTypedArray())
         transitionList.repaint()
+
+        updateAddButton()
     }
 
+    /**
+     * Handlers
+     */
 
+    private fun addQueItem() {
+        try {
+            validateSelection()
+        } catch(e: IllegalStateException) {
+            logger.info("Current selection is not valid. Not adding an item to the list.")
+            Notifications.add("Tried to add an invalid selection to the Queue List, skipping.", "AdvancedScenePlugin")
+            return
+        }
+        
+        val scene = OBSState.scenes[sceneList.selectedIndex]
+        val transition = OBSState.transitions[transitionList.selectedIndex]
+        val transitionDuration = transitionDuration.number.toInt()
+
+        val queItem = AdvancedSceneQueItem(plugin, scene, transition, transitionDuration)
+
+        Que.add(queItem)
+        GUI.refreshQueItems()
+    }
+
+    private fun updateAddButton() {
+        try {
+            validateSelection()
+            addButton.isEnabled = true
+        } catch (e: IllegalStateException) {
+            logger.info("Disabling add button due to invalid selection.")
+            addButton.isEnabled = false
+        }
+    }
+
+    /**
+     * Helpers
+     */
+
+    private fun validateSelection() {
+        if (sceneList.selectedIndex < 0 || transitionList.selectedIndex < 0 || transitionDuration.number.toInt() < 0) {
+            throw IllegalStateException("Not a valid state for adding a QueItem")
+        }
+    }
+
+    /**
+     * GUI Interface
+     */
+
+    private fun initGui() {
+        layout = BorderLayout()
+        border = EmptyBorder(10, 10, 0, 10)
+
+        add(topPanel(), BorderLayout.PAGE_START)
+        add(centerPanel(), BorderLayout.CENTER)
+        add(bottomPanel(), BorderLayout.PAGE_END)
+    }
+
+    private fun topPanel(): JComponent {
+        val header = JTextArea(LABEL_HEADER)
+        header.lineWrap = true
+        header.isEditable = false
+        header.font = header.font.deriveFont(Font.BOLD)
+        header.background = Theme.get.BACKGROUND_COLOR
+        return header
+    }
+
+    private fun centerPanel(): JComponent {
+        val pane = JPanel()
+
+        // Scenes Selector
+        val scenePane = JPanel(BorderLayout())
+        scenePane.add(labelWithMargin(LABEL_SCENES), BorderLayout.PAGE_START)
+        sceneList.dragEnabled = false
+        sceneList.selectionModel.addListSelectionListener {
+            if (it.valueIsAdjusting) {
+                logger.info("Updating scene selection to ${it.firstIndex} from ${it.lastIndex}")
+                updateAddButton()
+            }
+        }
+        sceneListSelector.preferredSize = Dimension(sceneListSelector.preferredSize.width, 300)
+        sceneListSelector.border = BorderFactory.createLineBorder(Theme.get.BORDER_COLOR)
+        scenePane.add(sceneListSelector, BorderLayout.CENTER)
+
+        // Transition Selector
+        val transitionPane = JPanel(BorderLayout())
+        transitionPane.add(labelWithMargin(LABEL_TRANSITIONS), BorderLayout.PAGE_START)
+        transitionList.dragEnabled = false
+        transitionList.selectionModel.addListSelectionListener {
+            if (it.valueIsAdjusting) {
+                logger.info("Updating transition selection to ${it.firstIndex} from ${it.lastIndex}")
+                updateAddButton()
+            }
+        }
+        transitionListSelector.preferredSize = Dimension(transitionListSelector.preferredSize.width, 200)
+        transitionListSelector.border = BorderFactory.createLineBorder(Theme.get.BORDER_COLOR)
+        transitionPane.add(transitionListSelector, BorderLayout.CENTER)
+
+        // Duration Selector
+        val durationPane = JPanel(BorderLayout())
+        durationPane.add(labelWithMargin(LABEL_DURATION), BorderLayout.PAGE_START)
+        transitionDurationSelector.border = BorderFactory.createLineBorder(Theme.get.BORDER_COLOR)
+        durationPane.add(transitionDurationSelector, BorderLayout.PAGE_END)
+
+        // Build layout
+        pane.layout = GroupLayout(pane)
+        val layout = pane.layout as GroupLayout
+        layout.autoCreateGaps = true
+        layout.setHorizontalGroup(
+            layout.createSequentialGroup()
+                .addGroup(
+                    layout.createParallelGroup()
+                        .addComponent(scenePane)
+                        .addComponent(transitionPane)
+                        .addComponent(durationPane)
+                )
+        )
+        layout.setVerticalGroup(
+            layout.createSequentialGroup()
+                .addComponent(scenePane)
+                .addComponent(transitionPane)
+                .addComponent(durationPane)
+        )
+
+        return pane
+    }
+
+    private fun bottomPanel(): JComponent {
+        // Add button
+        addButton.addActionListener { addQueItem() }
+        return addButton
+    }
+
+    private fun labelWithMargin(labelText: String): JLabel {
+        val label = JLabel(labelText)
+        label.border = marginTop
+        return label
+    }
 }

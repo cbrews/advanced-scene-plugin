@@ -19,23 +19,31 @@
 package com.chrisbrousseau.advancedScene.queItems
 
 import com.chrisbrousseau.advancedScene.AdvancedScenePlugin
+import com.chrisbrousseau.advancedScene.OBSClientHelper
 import gui.list.QueListCellRenderer
 import objects.OBSClient
+import objects.OBSState
 import objects.TScene
 import objects.TTransition
-import objects.que.QueItem
+import objects.que.JsonQueue
+import objects.que.Que
+import objects.que.SceneQueItem
+import themes.Theme
 import java.awt.Color
 import java.awt.Graphics2D
 import java.text.NumberFormat
+import java.util.logging.Logger
 import javax.swing.Icon
 import javax.swing.JLabel
 
 class AdvancedSceneQueItem(
     override val plugin: AdvancedScenePlugin,
-    val scene: TScene,
+    override val scene: TScene,
     val transition: TTransition,
     val transitionDuration: Int
-): QueItem {
+): SceneQueItem {
+    private val logger = Logger.getLogger(AdvancedSceneQueItem::class.java.name)
+
     override val name: String = scene.name
     override var executeAfterPrevious = false
     override var quickAccessColor: Color? = plugin.quickAccessColor
@@ -50,26 +58,78 @@ class AdvancedSceneQueItem(
         numberFormatter.isGroupingUsed = true
     }
 
-    override fun activate() {
-        OBSClient.getController()!!.setTransitionDuration(transitionDuration) {
-            TODO("Make sure scene still transitions if duration change fails")
-            OBSClient.getController()!!.changeSceneWithTransition(scene.name, transition.name) {
-                TODO("Make sure that the scene still transitions even if the specified transition cannot be found")
-                GUI.switchedScenes()
-                TODO("set preview scene next queued scene")
-            }
-        }
-    }
+    /**
+     * Plugin hooks
+     */
 
-    private fun description(): String {
-        return "${scene.name} - ${transition.name} (${numberFormatter.format(transitionDuration)} ms)"
+    override fun activate() {
+        // The transition duration is a global value in OBS.  Update it globally.
+        OBSClientHelper.setTransitionDuration(transitionDuration) {
+            // TODO: Make sure scene still transitions if duration change fails (log an error to Notifier though)
+            OBSClientHelper.changeSceneWithTransition(scene, transition) {
+                GUI.switchedScenes()
+            }
+
+            // Update the preview in OBS to the next scene
+            OBSClientHelper.updatePreviewScene {}
+        }
     }
 
     override fun getListCellRendererComponent(cell: JLabel, index: Int, isSelected: Boolean, cellHasFocus: Boolean) {
         super.getListCellRendererComponent(cell, index, isSelected, cellHasFocus)
+
+        // Mark the cell with an error if the scene can no longer be found.
+        // TODO more alerting colors
+        if (!validScene()) {
+            if (index == Que.currentIndex()) {
+                cell.background = Theme.get.NON_EXISTING_SELECTED_COLOR
+            }
+            cell.background = Theme.get.NON_EXISTING_COLOR
+            cell.icon = plugin.errorIcon
+            return
+        }
+
+        // Mark the cell with a warning if the transition can no longer be found.
+        if (!validTransition()) {
+            if (index == Que.currentIndex()) {
+                cell.background = Theme.get.NON_EXISTING_SELECTED_COLOR
+            }
+            cell.background = Theme.get.NON_EXISTING_COLOR
+            cell.icon = plugin.warningIcon
+            return
+        }
     }
 
-    override fun listCellRendererPaintAction(g: Graphics2D, queListCellRenderer: QueListCellRenderer) {
-        super.listCellRendererPaintAction(g, queListCellRenderer)
+    /**
+     * JSON I/O
+     */
+
+    companion object {
+        fun fromJson(plugin: AdvancedScenePlugin, jsonQueueItem: JsonQueue.QueueItem): AdvancedSceneQueItem {
+            return AdvancedSceneQueItem(
+                plugin,
+                TScene(jsonQueueItem.data["scene"]),
+                TTransition(jsonQueueItem.data["transition"]),
+                jsonQueueItem.data["transitionDuration"]!!.toInt()
+            )
+        }
     }
+
+    override fun toJson(): JsonQueue.QueueItem {
+        val json = super.toJson()
+        json.data["scene"] = scene.name
+        json.data["transition"] = transition.name
+        json.data["transitionDuration"] = transitionDuration.toString()
+        return json
+    }
+
+    /**
+     * Internal Helpers
+     */
+
+    private fun description(): String = "${scene.name} - ${transition.name} (${numberFormatter.format(transitionDuration)} ms)"
+
+    private fun validScene(): Boolean = OBSState.scenes.any { it.name == scene.name }
+
+    private fun validTransition(): Boolean = OBSState.transitions.any { it.name == transition.name }
 }
