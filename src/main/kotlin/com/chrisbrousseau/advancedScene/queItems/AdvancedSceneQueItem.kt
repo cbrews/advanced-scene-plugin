@@ -39,11 +39,15 @@ import javax.swing.JLabel
 class AdvancedSceneQueItem(
     override val plugin: AdvancedScenePlugin,
     override val scene: TScene,
-    private val transition: TTransition,
-    private val transitionDuration: Int
+    var transition: TTransition,
+    var transitionDuration: Int,
+    var notes: String = ""
 ): SceneQueItem {
     private val logger = Logger.getLogger(AdvancedSceneQueItem::class.java.name)
 
+    /**
+     * Plugin QueItem options
+     */
     override val name: String = scene.name
     override var executeAfterPrevious = false
     override var quickAccessColor: Color? = plugin.quickAccessColor
@@ -52,7 +56,10 @@ class AdvancedSceneQueItem(
     override fun toString() = description()
     override fun toConfigString() = description()
 
-    private var numberFormatter: NumberFormat = NumberFormat.getInstance()
+    /**
+     * Internal
+     */
+    private val numberFormatter: NumberFormat = NumberFormat.getInstance()
 
     init {
         numberFormatter.isGroupingUsed = true
@@ -100,6 +107,11 @@ class AdvancedSceneQueItem(
         }
     }
 
+    override fun userSelectionAction(quePanelIndex: Int) {
+        super.userSelectionAction(quePanelIndex)
+        plugin.detailPanelGui.setActiveQueItem(this)
+    }
+
     /**
      * JSON I/O
      */
@@ -110,7 +122,8 @@ class AdvancedSceneQueItem(
                 plugin,
                 TScene(jsonQueueItem.data["scene"]),
                 TTransition(jsonQueueItem.data["transition"]),
-                jsonQueueItem.data["transitionDuration"]!!.toInt()
+                jsonQueueItem.data["transitionDuration"]?.toInt() ?: 0,
+                jsonQueueItem.data["notes"] ?: ""
             )
         }
     }
@@ -120,6 +133,7 @@ class AdvancedSceneQueItem(
         json.data["scene"] = scene.name
         json.data["transition"] = transition.name
         json.data["transitionDuration"] = transitionDuration.toString()
+        json.data["notes"] = notes
         return json
     }
 

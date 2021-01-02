@@ -34,6 +34,8 @@ import java.util.logging.Logger
 import javax.management.Notification
 import javax.swing.*
 import javax.swing.border.EmptyBorder
+import javax.swing.event.ListSelectionEvent
+import javax.swing.event.ListSelectionListener
 
 class SourcePanel(private val plugin: AdvancedScenePlugin): JPanel(), Refreshable {
     private val logger = Logger.getLogger(SourcePanel::class.java.name)
@@ -152,9 +154,10 @@ class SourcePanel(private val plugin: AdvancedScenePlugin): JPanel(), Refreshabl
         val scenePane = JPanel(BorderLayout())
         scenePane.add(labelWithMargin(plugin.properties.get("label_scenes", "Sceness")), BorderLayout.PAGE_START)
         sceneList.dragEnabled = false
-        sceneList.selectionModel.addListSelectionListener {
-            if (it.valueIsAdjusting) {
-                logger.info("Updating scene selection to ${it.firstIndex} from ${it.lastIndex}")
+        sceneList.selectionMode = ListSelectionModel.SINGLE_SELECTION
+        sceneList.addListSelectionListener {
+            if (!it.valueIsAdjusting) {
+                logger.info("Updating scene selection to ${sceneList.selectedIndex}")
                 updateAddButton()
             }
         }
@@ -166,9 +169,10 @@ class SourcePanel(private val plugin: AdvancedScenePlugin): JPanel(), Refreshabl
         val transitionPane = JPanel(BorderLayout())
         transitionPane.add(labelWithMargin(plugin.properties.get("label_transitions", "Transitions")), BorderLayout.PAGE_START)
         transitionList.dragEnabled = false
-        transitionList.selectionModel.addListSelectionListener {
-            if (it.valueIsAdjusting) {
-                logger.info("Updating transition selection to ${it.firstIndex} from ${it.lastIndex}")
+        transitionList.selectionMode = ListSelectionModel.SINGLE_SELECTION
+        transitionList.addListSelectionListener {
+            if (!it.valueIsAdjusting) {
+                logger.info("Updating transition selection to ${transitionList.selectedIndex}")
                 updateAddButton()
             }
         }
