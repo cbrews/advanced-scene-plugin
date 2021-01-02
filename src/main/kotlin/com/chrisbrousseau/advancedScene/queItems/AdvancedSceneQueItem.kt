@@ -39,8 +39,8 @@ import javax.swing.JLabel
 class AdvancedSceneQueItem(
     override val plugin: AdvancedScenePlugin,
     override val scene: TScene,
-    val transition: TTransition,
-    val transitionDuration: Int
+    private val transition: TTransition,
+    private val transitionDuration: Int
 ): SceneQueItem {
     private val logger = Logger.getLogger(AdvancedSceneQueItem::class.java.name)
 

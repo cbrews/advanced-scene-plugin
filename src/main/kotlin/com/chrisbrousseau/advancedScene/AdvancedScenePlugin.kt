@@ -26,21 +26,23 @@ import objects.que.JsonQueue
 import objects.que.QueItem
 import plugins.common.QueItemBasePlugin
 import java.awt.Color
+import java.util.logging.Logger
 import javax.swing.Icon
 import javax.swing.JComponent
 
 @Suppress("unused")
 class AdvancedScenePlugin: QueItemBasePlugin {
-    override val name = "AdvancedScenePlugin"
-    override val description = "Adds scene advancedScene control to OBS Scene Queue"
-    override val version: String = "0.1.0"
     val properties: AdvancedSceneProperties = AdvancedSceneProperties()
+    val logger: Logger = Logger.getLogger(AdvancedScenePlugin::class.java.name)
+
+    override val name = properties.get("name")
+    override val description = properties.get("description")
+    override val version: String = properties.get("version")
+    override val tabName = properties.get("label_tab", "Advanced Scenes")
 
     override val icon: Icon? = createImageIcon("/com/chrisbrousseau/advancedScene/icon-14.png")
     val warningIcon: Icon? = createImageIcon("/com/chrisbrousseau/advancedScene/icon-warning-14.png")
     val errorIcon: Icon? = createImageIcon("/com/chrisbrousseau/advancedScene/icon-error-14.png")
-
-    override val tabName = "Advanced Scenes"
 
     val quickAccessColor = Color(229, 238, 255)
 
