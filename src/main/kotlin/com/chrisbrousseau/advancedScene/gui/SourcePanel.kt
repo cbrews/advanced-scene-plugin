@@ -35,12 +35,6 @@ import javax.management.Notification
 import javax.swing.*
 import javax.swing.border.EmptyBorder
 
-const val LABEL_HEADER = "Select a scene, a transition, a duration, and click \"Add\" to add to the queue."
-const val LABEL_SCENES = "Scene List"
-const val LABEL_TRANSITIONS = "Transition List"
-const val LABEL_DURATION = "Transition Duration (ms)"
-const val LABEL_ADD_BUTTON = "Add"
-
 class SourcePanel(private val plugin: AdvancedScenePlugin): JPanel(), Refreshable {
     private val logger = Logger.getLogger(SourcePanel::class.java.name)
 
@@ -52,7 +46,7 @@ class SourcePanel(private val plugin: AdvancedScenePlugin): JPanel(), Refreshabl
     private val transitionListSelector: JScrollPane = JScrollPane(transitionList)
     private val transitionDurationSelector: JSpinner = JSpinner(transitionDuration)
 
-    private val addButton: JButton = JButton(LABEL_ADD_BUTTON)
+    private val addButton: JButton = JButton(plugin.properties.get("label_add_button", "Add"))
 
     private val marginTop = EmptyBorder(5, 0, 0, 0)
 
@@ -143,7 +137,7 @@ class SourcePanel(private val plugin: AdvancedScenePlugin): JPanel(), Refreshabl
     }
 
     private fun topPanel(): JComponent {
-        val header = JTextArea(LABEL_HEADER)
+        val header = JTextArea(plugin.properties.get("label_header", "Advanced Scene"))
         header.lineWrap = true
         header.isEditable = false
         header.font = header.font.deriveFont(Font.BOLD)
@@ -156,7 +150,7 @@ class SourcePanel(private val plugin: AdvancedScenePlugin): JPanel(), Refreshabl
 
         // Scenes Selector
         val scenePane = JPanel(BorderLayout())
-        scenePane.add(labelWithMargin(LABEL_SCENES), BorderLayout.PAGE_START)
+        scenePane.add(labelWithMargin(plugin.properties.get("label_scenes", "Sceness")), BorderLayout.PAGE_START)
         sceneList.dragEnabled = false
         sceneList.selectionModel.addListSelectionListener {
             if (it.valueIsAdjusting) {
@@ -170,7 +164,7 @@ class SourcePanel(private val plugin: AdvancedScenePlugin): JPanel(), Refreshabl
 
         // Transition Selector
         val transitionPane = JPanel(BorderLayout())
-        transitionPane.add(labelWithMargin(LABEL_TRANSITIONS), BorderLayout.PAGE_START)
+        transitionPane.add(labelWithMargin(plugin.properties.get("label_transitions", "Transitions")), BorderLayout.PAGE_START)
         transitionList.dragEnabled = false
         transitionList.selectionModel.addListSelectionListener {
             if (it.valueIsAdjusting) {
@@ -184,7 +178,7 @@ class SourcePanel(private val plugin: AdvancedScenePlugin): JPanel(), Refreshabl
 
         // Duration Selector
         val durationPane = JPanel(BorderLayout())
-        durationPane.add(labelWithMargin(LABEL_DURATION), BorderLayout.PAGE_START)
+        durationPane.add(labelWithMargin(plugin.properties.get("label_duration", "Duration")), BorderLayout.PAGE_START)
         transitionDurationSelector.border = BorderFactory.createLineBorder(Theme.get.BORDER_COLOR)
         durationPane.add(transitionDurationSelector, BorderLayout.PAGE_END)
 

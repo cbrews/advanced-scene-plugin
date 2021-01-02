@@ -34,6 +34,7 @@ class AdvancedScenePlugin: QueItemBasePlugin {
     override val name = "AdvancedScenePlugin"
     override val description = "Adds scene advancedScene control to OBS Scene Queue"
     override val version: String = "0.1.0"
+    val properties: AdvancedSceneProperties = AdvancedSceneProperties()
 
     override val icon: Icon? = createImageIcon("/com/chrisbrousseau/advancedScene/icon-14.png")
     val warningIcon: Icon? = createImageIcon("/com/chrisbrousseau/advancedScene/icon-warning-14.png")
