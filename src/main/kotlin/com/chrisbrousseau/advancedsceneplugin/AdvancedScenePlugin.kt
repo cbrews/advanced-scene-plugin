@@ -21,14 +21,15 @@ package com.chrisbrousseau.advancedsceneplugin
 import com.chrisbrousseau.advancedsceneplugin.gui.DetailPanel
 import com.chrisbrousseau.advancedsceneplugin.gui.SourcePanel
 import com.chrisbrousseau.advancedsceneplugin.queItems.AdvancedSceneQueItem
-import gui.utils.createImageIcon
 import objects.que.JsonQueue
 import objects.que.QueItem
 import plugins.common.DetailPanelBasePlugin
 import plugins.common.QueItemBasePlugin
 import java.awt.Color
+import java.net.URL
 import java.util.logging.Logger
 import javax.swing.Icon
+import javax.swing.ImageIcon
 import javax.swing.JComponent
 
 @Suppress("unused")
@@ -85,5 +86,18 @@ class AdvancedScenePlugin: QueItemBasePlugin, DetailPanelBasePlugin {
             AdvancedSceneQueItem::class.java.simpleName -> AdvancedSceneQueItem.fromJson(this, jsonQueueItem)
             else -> throw IllegalArgumentException("Invalid Advanced Scene Plugin queue item: ${jsonQueueItem.className}")
         }
+    }
+
+    /**
+     * Util
+     */
+    private fun createImageIcon(path: String): ImageIcon? {
+        val imgURL: URL? = javaClass.getResource(path)
+        if (imgURL != null) {
+            return ImageIcon(imgURL)
+        }
+
+        logger.severe("Couldn't find imageIcon: $path")
+        return null
     }
 }
