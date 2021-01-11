@@ -1,5 +1,5 @@
 /**
- * Copyright 2020 Chris Brousseau
+ * Copyright 2020-2021 Chris Brousseau
  * This file is part of OSQ Advanced Scene Plugin.
  *
  * OSQ Advanced Scene Plugin is free software: you can redistribute it and/or modify
@@ -16,15 +16,18 @@
  * along with OSQ Advanced Scene Plugin.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.chrisbrousseau.advancedScene.gui.shared
+package com.chrisbrousseau.advancedsceneplugin
 
-import com.chrisbrousseau.advancedScene.AdvancedScenePlugin
-import javax.swing.JLabel
-import javax.swing.border.EmptyBorder
+import java.util.*
 
-class Label(private val plugin: AdvancedScenePlugin, private val labelText: String): JLabel() {
+class AdvancedSceneProperties {
+    private val properties = Properties()
+
     init {
-        text = plugin.properties.get(labelText, "<Unknown Label>")
-        border = EmptyBorder(5, 0, 0, 0)
+        properties.load(AdvancedSceneProperties::class.java.getResourceAsStream("/com/chrisbrousseau/advancedsceneplugin/plugin.properties"))
+    }
+
+    fun get(propertyName: String, defaultValue: String = ""): String {
+        return properties.getProperty(propertyName, defaultValue)
     }
 }

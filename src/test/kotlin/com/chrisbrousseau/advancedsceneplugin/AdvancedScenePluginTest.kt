@@ -16,13 +16,15 @@
  * along with OSQ Advanced Scene Plugin.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.chrisbrousseau.advancedScene.gui.shared
+package com.chrisbrousseau.advancedsceneplugin
 
-import com.chrisbrousseau.advancedScene.AdvancedScenePlugin
-import javax.swing.JButton
+import kotlin.test.Test
+import kotlin.test.assertTrue
 
-class Button(private val plugin: AdvancedScenePlugin, label: String): JButton() {
-    init {
-        text = plugin.properties.get(label, "Submit")
+class AdvancedScenePluginTest {
+
+    @Test
+    fun testStub() {
+        assertTrue(true)
     }
 }

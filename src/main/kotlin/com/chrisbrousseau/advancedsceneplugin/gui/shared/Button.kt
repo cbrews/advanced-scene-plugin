@@ -1,5 +1,5 @@
 /**
- * Copyright 2020 Chris Brousseau
+ * Copyright 2020-2021 Chris Brousseau
  * This file is part of OSQ Advanced Scene Plugin.
  *
  * OSQ Advanced Scene Plugin is free software: you can redistribute it and/or modify
@@ -16,18 +16,13 @@
  * along with OSQ Advanced Scene Plugin.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.chrisbrousseau.advancedScene
+package com.chrisbrousseau.advancedsceneplugin.gui.shared
 
-import java.util.*
+import com.chrisbrousseau.advancedsceneplugin.AdvancedScenePlugin
+import javax.swing.JButton
 
-class AdvancedSceneProperties {
-    private val properties = Properties()
-
+class Button(private val plugin: AdvancedScenePlugin, label: String): JButton() {
     init {
-        properties.load(AdvancedSceneProperties::class.java.getResourceAsStream("/com/chrisbrousseau/advancedScene/plugin.properties"))
-    }
-
-    fun get(propertyName: String, defaultValue: String = ""): String {
-        return properties.getProperty(propertyName, defaultValue)
+        text = plugin.properties.get(label, "Submit")
     }
 }

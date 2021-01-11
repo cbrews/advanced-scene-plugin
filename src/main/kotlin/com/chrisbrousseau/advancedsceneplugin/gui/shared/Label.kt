@@ -1,5 +1,5 @@
 /**
- * Copyright 2020 Chris Brousseau
+ * Copyright 2020-2021 Chris Brousseau
  * This file is part of OSQ Advanced Scene Plugin.
  *
  * OSQ Advanced Scene Plugin is free software: you can redistribute it and/or modify
@@ -16,15 +16,15 @@
  * along with OSQ Advanced Scene Plugin.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.chrisbrousseau.advancedScene
+package com.chrisbrousseau.advancedsceneplugin.gui.shared
 
-import kotlin.test.Test
-import kotlin.test.assertTrue
+import com.chrisbrousseau.advancedsceneplugin.AdvancedScenePlugin
+import javax.swing.JLabel
+import javax.swing.border.EmptyBorder
 
-class AdvancedScenePluginTest {
-
-    @Test
-    fun testStub() {
-        assertTrue(true)
+class Label(private val plugin: AdvancedScenePlugin, private val labelText: String): JLabel() {
+    init {
+        text = plugin.properties.get(labelText, "<Unknown Label>")
+        border = EmptyBorder(5, 0, 0, 0)
     }
 }

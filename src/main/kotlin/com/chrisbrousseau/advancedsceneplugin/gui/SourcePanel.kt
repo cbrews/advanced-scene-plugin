@@ -1,5 +1,5 @@
 /**
- * Copyright 2020 Chris Brousseau
+ * Copyright 2020-2021 Chris Brousseau
  * This file is part of OSQ Advanced Scene Plugin.
  *
  * OSQ Advanced Scene Plugin is free software: you can redistribute it and/or modify
@@ -16,11 +16,11 @@
  * along with OSQ Advanced Scene Plugin.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.chrisbrousseau.advancedScene.gui
+package com.chrisbrousseau.advancedsceneplugin.gui
 
-import com.chrisbrousseau.advancedScene.AdvancedScenePlugin
-import com.chrisbrousseau.advancedScene.gui.shared.*
-import com.chrisbrousseau.advancedScene.queItems.AdvancedSceneQueItem
+import com.chrisbrousseau.advancedsceneplugin.AdvancedScenePlugin
+import com.chrisbrousseau.advancedsceneplugin.gui.shared.*
+import com.chrisbrousseau.advancedsceneplugin.queItems.AdvancedSceneQueItem
 import objects.notifications.Notifications
 import objects.que.Que
 import themes.Theme

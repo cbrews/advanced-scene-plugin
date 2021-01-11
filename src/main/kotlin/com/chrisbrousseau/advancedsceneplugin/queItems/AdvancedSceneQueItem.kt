@@ -1,5 +1,5 @@
 /**
- * Copyright 2020 Chris Brousseau
+ * Copyright 2020-2021 Chris Brousseau
  * This file is part of OSQ Advanced Scene Plugin.
  *
  * OSQ Advanced Scene Plugin is free software: you can redistribute it and/or modify
@@ -16,12 +16,10 @@
  * along with OSQ Advanced Scene Plugin.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.chrisbrousseau.advancedScene.queItems
+package com.chrisbrousseau.advancedsceneplugin.queItems
 
-import com.chrisbrousseau.advancedScene.AdvancedScenePlugin
-import com.chrisbrousseau.advancedScene.OBSClientHelper
-import gui.list.QueListCellRenderer
-import objects.OBSClient
+import com.chrisbrousseau.advancedsceneplugin.AdvancedScenePlugin
+import com.chrisbrousseau.advancedsceneplugin.OBSClientHelper
 import objects.OBSState
 import objects.TScene
 import objects.TTransition
@@ -30,7 +28,6 @@ import objects.que.Que
 import objects.que.SceneQueItem
 import themes.Theme
 import java.awt.Color
-import java.awt.Graphics2D
 import java.text.NumberFormat
 import java.util.logging.Logger
 import javax.swing.Icon

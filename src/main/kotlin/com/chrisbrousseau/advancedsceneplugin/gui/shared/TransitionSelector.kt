@@ -1,5 +1,5 @@
 /**
- * Copyright 2020 Chris Brousseau
+ * Copyright 2020-2021 Chris Brousseau
  * This file is part of OSQ Advanced Scene Plugin.
  *
  * OSQ Advanced Scene Plugin is free software: you can redistribute it and/or modify
@@ -16,21 +16,21 @@
  * along with OSQ Advanced Scene Plugin.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.chrisbrousseau.advancedScene.gui.shared
+package com.chrisbrousseau.advancedsceneplugin.gui.shared
 
-import com.chrisbrousseau.advancedScene.AdvancedScenePlugin
+import com.chrisbrousseau.advancedsceneplugin.AdvancedScenePlugin
 import gui.Refreshable
 import gui.utils.DefaultSourcesList
 import objects.OBSState
-import objects.TScene
+import objects.TTransition
 import themes.Theme
 import java.awt.BorderLayout
 import java.awt.Dimension
 import java.util.logging.Logger
 import javax.swing.*
 
-class SceneSelector(private val plugin: AdvancedScenePlugin): JPanel(), Refreshable {
-    private val logger = Logger.getLogger(SceneSelector::class.java.name)
+class TransitionSelector(private val plugin: AdvancedScenePlugin): JPanel(), Refreshable {
+    private val logger = Logger.getLogger(TransitionSelector::class.java.name)
 
     private val list: JList<String> = DefaultSourcesList()
     private val listSelector: JScrollPane = JScrollPane(list)
@@ -43,13 +43,13 @@ class SceneSelector(private val plugin: AdvancedScenePlugin): JPanel(), Refresha
         GUI.register(this)
         initGui()
 
-        refreshScenes()
+        refreshTransitions()
     }
 
-    override fun refreshScenes() {
-        super.refreshScenes()
+    override fun refreshTransitions() {
+        super.refreshTransitions()
 
-        list.setListData(OBSState.scenes.map { it.name }.toTypedArray())
+        list.setListData(OBSState.transitions.map { it.name }.toTypedArray())
         list.repaint()
     }
 
@@ -57,19 +57,19 @@ class SceneSelector(private val plugin: AdvancedScenePlugin): JPanel(), Refresha
      * Data access & callbacks
      */
 
-    var value: TScene?
-        get() = when(list.selectedIndex < 0 || list.selectedIndex >= OBSState.scenes.size) {
+    var value: TTransition?
+        get() = when(list.selectedIndex < 0 || list.selectedIndex >= OBSState.transitions.size) {
             true -> null
-            else -> OBSState.scenes[list.selectedIndex]
+            else -> OBSState.transitions[list.selectedIndex]
         }
-        set(scene) {
-            list.setSelectedValue(scene?.name, true)
+        set(transition) {
+            list.setSelectedValue(transition?.name, true)
         }
 
-    fun onSelect(callback: (TScene?) -> Unit) {
+    fun onSelect(callback: (TTransition?) -> Unit) {
         list.addListSelectionListener {
             if(!it.valueIsAdjusting) {
-                logger.info("Updating scene selection to ${list.selectedIndex}")
+                logger.info("Updating transition selection to ${list.selectedIndex}")
                 callback(this.value)
             }
         }
@@ -85,10 +85,10 @@ class SceneSelector(private val plugin: AdvancedScenePlugin): JPanel(), Refresha
         list.dragEnabled = false
         list.selectionMode = ListSelectionModel.SINGLE_SELECTION
 
-        listSelector.preferredSize = Dimension(listSelector.preferredSize.width, 300)
+        listSelector.preferredSize = Dimension(listSelector.preferredSize.width, 200)
         listSelector.border = BorderFactory.createLineBorder(Theme.get.BORDER_COLOR)
 
-        add(Label(plugin, "label_scenes"), BorderLayout.PAGE_START)
+        add(Label(plugin, "label_transitions"), BorderLayout.PAGE_START)
         add(listSelector, BorderLayout.CENTER)
     }
 }

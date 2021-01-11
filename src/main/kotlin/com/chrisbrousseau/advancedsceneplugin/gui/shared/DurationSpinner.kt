@@ -1,5 +1,5 @@
 /**
- * Copyright 2020 Chris Brousseau
+ * Copyright 2020-2021 Chris Brousseau
  * This file is part of OSQ Advanced Scene Plugin.
  *
  * OSQ Advanced Scene Plugin is free software: you can redistribute it and/or modify
@@ -16,17 +16,14 @@
  * along with OSQ Advanced Scene Plugin.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.chrisbrousseau.advancedScene.gui.shared
+package com.chrisbrousseau.advancedsceneplugin.gui.shared
 
-import com.chrisbrousseau.advancedScene.AdvancedScenePlugin
-import themes.Theme
+import com.chrisbrousseau.advancedsceneplugin.AdvancedScenePlugin
 import java.awt.BorderLayout
 import java.util.logging.Logger
-import javax.swing.BorderFactory
 import javax.swing.JPanel
 import javax.swing.JSpinner
 import javax.swing.SpinnerNumberModel
-import javax.swing.border.CompoundBorder
 import javax.swing.border.EmptyBorder
 
 class DurationSpinner(private val plugin: AdvancedScenePlugin): JPanel() {

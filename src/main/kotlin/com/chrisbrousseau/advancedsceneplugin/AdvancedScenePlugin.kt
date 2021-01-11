@@ -1,5 +1,5 @@
 /**
- * Copyright 2020 Chris Brousseau
+ * Copyright 2020-2021 Chris Brousseau
  * This file is part of OSQ Advanced Scene Plugin.
  *
  * OSQ Advanced Scene Plugin is free software: you can redistribute it and/or modify
@@ -16,12 +16,11 @@
  * along with OSQ Advanced Scene Plugin.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.chrisbrousseau.advancedScene
+package com.chrisbrousseau.advancedsceneplugin
 
-import com.chrisbrousseau.advancedScene.gui.DetailPanel
-import com.chrisbrousseau.advancedScene.gui.SourcePanel
-import com.chrisbrousseau.advancedScene.queItems.AdvancedSceneQueItem
-import gui.list.QuePanel
+import com.chrisbrousseau.advancedsceneplugin.gui.DetailPanel
+import com.chrisbrousseau.advancedsceneplugin.gui.SourcePanel
+import com.chrisbrousseau.advancedsceneplugin.queItems.AdvancedSceneQueItem
 import gui.utils.createImageIcon
 import objects.que.JsonQueue
 import objects.que.QueItem
@@ -42,9 +41,9 @@ class AdvancedScenePlugin: QueItemBasePlugin, DetailPanelBasePlugin {
     override val version: String = properties.get("version")
     override val tabName = properties.get("label_tab", "Advanced Scenes")
 
-    override val icon: Icon? = createImageIcon("/com/chrisbrousseau/advancedScene/icon-14.png")
-    val warningIcon: Icon? = createImageIcon("/com/chrisbrousseau/advancedScene/icon-warning-14.png")
-    val errorIcon: Icon? = createImageIcon("/com/chrisbrousseau/advancedScene/icon-error-14.png")
+    override val icon: Icon? = createImageIcon("/com/chrisbrousseau/advancedsceneplugin/icon-14.png")
+    val warningIcon: Icon? = createImageIcon("/com/chrisbrousseau/advancedsceneplugin/icon-warning-14.png")
+    val errorIcon: Icon? = createImageIcon("/com/chrisbrousseau/advancedsceneplugin/icon-error-14.png")
 
     val sourcePanelGui: SourcePanel = SourcePanel(this)
     val detailPanelGui: DetailPanel = DetailPanel(this)

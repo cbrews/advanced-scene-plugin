@@ -1,5 +1,5 @@
 /**
- * Copyright 2020 Chris Brousseau
+ * Copyright 2020-2021 Chris Brousseau
  * This file is part of OSQ Advanced Scene Plugin.
  *
  * OSQ Advanced Scene Plugin is free software: you can redistribute it and/or modify
@@ -16,9 +16,9 @@
  * along with OSQ Advanced Scene Plugin.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.chrisbrousseau.advancedScene.gui.shared
+package com.chrisbrousseau.advancedsceneplugin.gui.shared
 
-import com.chrisbrousseau.advancedScene.AdvancedScenePlugin
+import com.chrisbrousseau.advancedsceneplugin.AdvancedScenePlugin
 import themes.Theme
 import java.awt.BorderLayout
 import java.awt.Dimension
@@ -27,7 +27,6 @@ import javax.swing.JPanel
 import javax.swing.JTextArea
 import javax.swing.border.CompoundBorder
 import javax.swing.border.EmptyBorder
-import javax.swing.border.LineBorder
 
 class TextField(private val plugin: AdvancedScenePlugin, label: String): JPanel() {
     private val labelComponent: Label = Label(plugin, label)
