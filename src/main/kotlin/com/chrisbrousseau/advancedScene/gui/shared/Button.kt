@@ -16,18 +16,13 @@
  * along with OSQ Advanced Scene Plugin.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.chrisbrousseau.advancedScene
+package com.chrisbrousseau.advancedScene.gui.shared
 
-import java.util.*
+import com.chrisbrousseau.advancedScene.AdvancedScenePlugin
+import javax.swing.JButton
 
-class AdvancedSceneProperties {
-    private val properties = Properties()
-
+class Button(private val plugin: AdvancedScenePlugin, label: String): JButton() {
     init {
-        properties.load(AdvancedSceneProperties::class.java.getResourceAsStream("/com/chrisbrousseau/advancedScene/plugin.properties"))
-    }
-
-    fun get(propertyName: String, defaultValue: String = ""): String {
-        return properties.getProperty(propertyName, defaultValue)
+        text = plugin.properties.get(label, "Submit")
     }
 }

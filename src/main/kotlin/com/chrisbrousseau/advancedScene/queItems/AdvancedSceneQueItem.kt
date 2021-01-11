@@ -57,15 +57,6 @@ class AdvancedSceneQueItem(
     override fun toConfigString() = description()
 
     /**
-     * Internal
-     */
-    private val numberFormatter: NumberFormat = NumberFormat.getInstance()
-
-    init {
-        numberFormatter.isGroupingUsed = true
-    }
-
-    /**
      * Plugin hooks
      */
 
@@ -87,7 +78,7 @@ class AdvancedSceneQueItem(
 
         // Mark the cell with an error if the scene can no longer be found.
         // TODO more alerting colors
-        if (!validScene()) {
+        if (errorScene()) {
             if (index == Que.currentIndex()) {
                 cell.background = Theme.get.NON_EXISTING_SELECTED_COLOR
             }
@@ -97,7 +88,7 @@ class AdvancedSceneQueItem(
         }
 
         // Mark the cell with a warning if the transition can no longer be found.
-        if (!validTransition()) {
+        if (errorTransition()) {
             if (index == Que.currentIndex()) {
                 cell.background = Theme.get.NON_EXISTING_SELECTED_COLOR
             }
@@ -107,9 +98,14 @@ class AdvancedSceneQueItem(
         }
     }
 
-    override fun userSelectionAction(quePanelIndex: Int) {
-        super.userSelectionAction(quePanelIndex)
+    override fun userSelectionAction() {
+        super.userSelectionAction()
         plugin.detailPanelGui.setActiveQueItem(this)
+    }
+
+    override fun userDeselectionAction() {
+        super.userDeselectionAction()
+        plugin.detailPanelGui.deactivateQueItem(this)
     }
 
     /**
@@ -141,9 +137,15 @@ class AdvancedSceneQueItem(
      * Internal Helpers
      */
 
+    private val numberFormatter: NumberFormat = NumberFormat.getInstance()
+
+    init {
+        numberFormatter.isGroupingUsed = true
+    }
+
     private fun description(): String = "${scene.name} - ${transition.name} (${numberFormatter.format(transitionDuration)} ms)"
 
-    private fun validScene(): Boolean = OBSState.scenes.any { it.name == scene.name }
+    fun errorScene(): Boolean = !OBSState.scenes.any { it.name == scene.name }
 
-    private fun validTransition(): Boolean = OBSState.transitions.any { it.name == transition.name }
+    fun errorTransition(): Boolean = !OBSState.transitions.any { it.name == transition.name }
 }
